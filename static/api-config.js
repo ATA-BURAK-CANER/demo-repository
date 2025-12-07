@@ -1,3 +1,2 @@
-// Update this value on GitHub Pages to point to your deployed backend (Render/Railway/etc.).
-// Example: window.API_BASE = 'https://your-render-app.onrender.com';
-window.API_BASE = window.API_BASE || '';
+// Backend URL - Render'da deploy edildi
+window.API_BASE = 'https://demo-repository-8q0y.onrender.com';
