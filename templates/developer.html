@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <div class="container-xl section-gap">
+    <div class="mb-3">
+      <a class="btn pill-btn ghost" href="/about">← Ekibe Dön</a>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="panel team-card text-center sticky-top" style="top:120px;">
+          <img src="{{ developer.avatar }}" alt="{{ developer.name }}" class="dev-avatar mb-3">
+          <h3 class="mb-1">{{ developer.name }}</h3>
+          <p class="text-muted mb-3">{{ developer.role }}</p>
+          <div class="d-flex gap-2 justify-content-center">
+            <a class="btn pill-btn tiny" href="{{ developer.github }}" target="_blank" rel="noopener">GitHub</a>
+            <a class="btn pill-btn ghost tiny" href="{{ developer.linkedin }}" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="panel panel-glass">
+          <h4 class="mb-3">Hakkında</h4>
+          <p class="text-muted">{{ developer.bio }}</p>
+        </div>
+        <div class="panel panel-glass mt-4">
+          <h5 class="mb-3">Yetenekler</h5>
+          <div class="d-flex flex-wrap gap-2">
+            {% for skill in developer.skills %}
+              <span class="chip">{{ skill }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="panel panel-glass mt-4">
+          <h5 class="mb-3">İletişim</h5>
+          <div class="info-grid">
+            <div>
+              <p class="label">GitHub</p>
+              <p class="value"><a href="{{ developer.github }}" target="_blank" rel="noopener">{{ developer.github.split('/')[-1] }}</a></p>
+            </div>
+            <div>
+              <p class="label">LinkedIn</p>
+              <p class="value"><a href="{{ developer.linkedin }}" target="_blank" rel="noopener">{{ developer.linkedin.split('/')[-1] }}</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

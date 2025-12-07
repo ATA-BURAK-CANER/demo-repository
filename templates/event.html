@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <div class="container-xl section-gap">
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+      <a class="btn pill-btn ghost" href="/">← Etkinliklere Dön</a>
+      <span class="chip subtle">Eklenme: {{ event.created_at.strftime('%d.%m.%Y') }}</span>
+    </div>
+
+    <div class="event-hero-card">
+      <div class="event-hero-img" style="background-image:url('{{ event.image_url or url_for('static', filename='img/placeholders/event-placeholder.png') }}')"></div>
+      <div class="event-hero-body">
+        <div class="eyebrow text-uppercase">{{ event.categories | map(attribute='name') | join(', ') }}</div>
+        <h1 class="display-5 fw-bold mb-3">{{ event.title }}</h1>
+        <p class="text-muted hero-sub">{{ event.description or 'Bu etkinlik için açıklama yakında eklenecek.' }}</p>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          <span class="chip">{{ event.start_time.strftime('%d.%m.%Y %H:%M') }}{% if event.end_time %} — {{ event.end_time.strftime('%d.%m.%Y %H:%M') }}{% endif %}</span>
+          {% if event.location %}<span class="chip light">{{ event.location }}</span>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-4">
+      <div class="col-lg-8">
+        <div class="panel panel-glass">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Etkinlik Detayları</h3>
+            <span class="chip ghost">{{ event.categories | map(attribute='name') | join(', ') }}</span>
+          </div>
+          <p class="text-muted">{{ event.description or 'Bu etkinlik için detaylı açıklama henüz eklenmedi.' }}</p>
+          <div class="info-grid mt-3">
+            <div>
+              <p class="label">Başlangıç</p>
+              <p class="value">{{ event.start_time.strftime('%d %B %Y, %H:%M') }}</p>
+            </div>
+            <div>
+              <p class="label">Bitiş</p>
+              <p class="value">{% if event.end_time %}{{ event.end_time.strftime('%d %B %Y, %H:%M') }}{% else %}-{% endif %}</p>
+            </div>
+            <div>
+              <p class="label">Konum</p>
+              <p class="value">{{ event.location or 'Belirtilmedi' }}</p>
+            </div>
+            <div>
+              <p class="label">Kategoriler</p>
+              <p class="value">{{ event.categories | map(attribute='name') | join(', ') }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="panel side-card">
+          <h5 class="mb-2">Bilgiler</h5>
+          <div class="stack">
+            <div>
+              <p class="label">Oluşturulma</p>
+              <p class="value">{{ event.created_at.strftime('%d.%m.%Y') }}</p>
+            </div>
+            <div>
+              <p class="label">Durum</p>
+              <p class="value">Aktif</p>
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-3">
+            <a class="btn pill-btn tiny" href="{{ url_for('main.book_ticket') }}?event_id={{ event.id }}">Bilet Al</a>
+            <a class="btn pill-btn ghost tiny" href="/">Tüm Etkinlikler</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

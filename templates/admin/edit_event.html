@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <div class="container-xl section-gap">
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        <div class="panel panel-glass">
+          <h4 class="mb-4">Etkinliği Düzenle</h4>
+          <form method="post">
+            <div class="mb-3">
+              <label class="form-label">Başlık</label>
+              <input name="title" class="form-control" value="{{ event.title }}" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Açıklama</label>
+              <textarea name="description" class="form-control" rows="4">{{ event.description }}</textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Görsel URL</label>
+              <input name="image_url" class="form-control" value="{{ event.image_url or '' }}" placeholder="https://images.unsplash.com/...">
+              <small class="text-muted">Unsplash veya benzeri bir URL girin</small>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Konum</label>
+                <input name="location" class="form-control" value="{{ event.location or '' }}" placeholder="Örn: Ankara Sanat Merkezi">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Kategoriler (virgülle ayır)</label>
+                <input name="categories" class="form-control" value="{{ categories }}" placeholder="Örn: Konser, Müzik">
+              </div>
+            </div>
+            <div class="row g-3 mt-2">
+              <div class="col-md-6">
+                <label class="form-label">Başlangıç</label>
+                <input type="datetime-local" name="start_time" class="form-control" value="{{ event.start_time.strftime('%Y-%m-%dT%H:%M') if event.start_time else '' }}">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Bitiş</label>
+                <input type="datetime-local" name="end_time" class="form-control" value="{{ event.end_time.strftime('%Y-%m-%dT%H:%M') if event.end_time else '' }}">
+              </div>
+            </div>
+            <div class="mt-4 d-flex gap-2 justify-content-end">
+              <a href="{{ url_for('admin.events') }}" class="btn pill-btn ghost">İptal</a>
+              <button type="submit" class="btn pill-btn">Güncelle</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
