@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ yer.isim }} - Detay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <header class="d-flex align-items-center" style="position: relative; border-bottom: 2px solid rgba(220, 38, 38, 0.3); padding: 15px 30px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 27, 75, 0.95) 100%); backdrop-filter: blur(10px);">
+      <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 12px; margin-right: auto; cursor: pointer;">
+        <span style="font-size: 1.8rem;">🏛️</span>
+        <h1 style="margin: 0; color: #fbbf24; font-weight: 900; letter-spacing: 1px;">Tarihi Yerler</h1>
+      </a>
+      <nav style="display: flex; align-items: center; gap: 25px;">
+        <a href="/" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-weight: 600; transition: all 0.3s ease; border-bottom: 2px solid transparent;">Ana Sayfa</a>
+        <a href="/harita" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-weight: 600; transition: all 0.3s ease; border-bottom: 2px solid transparent;">Harita</a>
+        {% if is_admin() %}
+        <a href="{{ url_for('admin_dashboard') }}" style="color: rgba(255, 193, 7, 0.9); text-decoration: none; font-weight: 700; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255, 193, 7, 0.5); background: rgba(255, 193, 7, 0.1);">⚙️ Admin</a>
+        {% else %}
+        <a href="{{ url_for('admin_login') }}" style="color: rgba(255, 193, 7, 0.6); text-decoration: none; font-weight: 600; transition: all 0.3s ease; border-bottom: 2px solid transparent;">Yönetici</a>
+        {% endif %}
+        <button class="theme-toggle" id="themeToggle" title="Dark Mode" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">🌙</button>
+      </nav>
+    </header>
+
+    <main class="container mt-4" style="max-width: 1100px; padding-bottom: 60px;">
+      <div class="mekan-karti" style="background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(30, 27, 75, 0.5) 100%); border-left: 5px solid #dc2626; border-radius: 15px; padding: 40px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); overflow: visible; height: auto;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 30px; color: white; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);">{{ yer.isim }}</h2>
+        
+        <!-- Galeri -->
+        {% set imgs = get_images_for_place(yer.id, 'carousel') %}
+        {% if imgs|length > 0 %}
+        <div id="carousel-{{ yer.id }}" class="carousel slide" data-bs-ride="carousel" style="border-radius: 12px; overflow: hidden; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); margin-bottom: 35px;">
+          <div class="carousel-inner">
+            {% for img in imgs %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+              <img src="{{ url_for('static', filename=img) }}" class="d-block w-100 place-image" alt="{{ yer.isim }}" loading="eager" decoding="sync" onerror="this.src='https://via.placeholder.com/800x400?text=Resim+Yok'" style="height: 450px; object-fit: cover;">
+            </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ yer.id }}" data-bs-slide="prev" style="background: rgba(0, 0, 0, 0.5); border: none; border-radius: 8px; width: 50px; height: 50px; left: 20px;">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Önceki</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ yer.id }}" data-bs-slide="next" style="background: rgba(0, 0, 0, 0.5); border: none; border-radius: 8px; width: 50px; height: 50px; right: 20px;">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Sonraki</span>
+          </button>
+        </div>
+        {% else %}
+        <img src="{{ url_for('static', filename=yer.resim) }}" alt="{{ yer.isim }}" class="img-fluid place-image" onerror="this.src='https://via.placeholder.com/800x400?text=Resim+Yok'" style="border-radius: 12px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); margin-bottom: 35px; height: 450px; object-fit: cover; width: 100%;">
+        {% endif %}
+
+        <!-- Açıklama -->
+        <div style="margin-bottom: 30px; padding: 26px 28px; background: rgba(15, 23, 42, 0.82); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.4);">
+          <p style="font-size: 1.22rem; line-height: 2.05; color: #ffffff; margin: 0; text-align: justify; font-weight: 600; letter-spacing: 0.2px; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45); display: block; overflow: visible; max-height: none; -webkit-line-clamp: unset; -webkit-box-orient: initial;">{{ yer.uzun }}</p>
+        </div>
+
+        <!-- Mekan Bilgileri -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 35px;">
+          <div style="background: rgba(220, 38, 38, 0.1); border-left: 4px solid #dc2626; padding: 20px; border-radius: 10px;">
+            <p style="margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;"><b>Kategori</b></p>
+            <p style="margin: 0; color: #fbbf24; font-size: 1.2rem; font-weight: 700;">{{ yer.kategori }}</p>
+          </div>
+          <div style="background: rgba(30, 58, 138, 0.1); border-left: 4px solid #3b82f6; padding: 20px; border-radius: 10px;">
+            <p style="margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;"><b>Şehir</b></p>
+            <p style="margin: 0; color: #60a5fa; font-size: 1.2rem; font-weight: 700;">{{ yer.sehir }}</p>
+          </div>
+          <div style="background: rgba(147, 51, 234, 0.1); border-left: 4px solid #a855f7; padding: 20px; border-radius: 10px;">
+            <p style="margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;"><b>Konum</b></p>
+            <p style="margin: 0; color: #d8b4fe; font-size: 0.95rem; font-weight: 600;">📍 {{ yer.lat }}, {{ yer.lon }}</p>
+          </div>
+        </div>
+
+        <!-- Harita -->
+        <div style="margin-bottom: 40px;">
+          <h4 style="color: white; font-weight: 700; font-size: 1.4rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">📍 Harita Üzerinde Konum</h4>
+          <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);">
+            <iframe width="100%" height="400" frameborder="0" style="border: none;" src="https://www.openstreetmap.org/export/embed.html?bbox={{ yer.lon - 0.01 }},{{ yer.lat - 0.01 }},{{ yer.lon + 0.01 }},{{ yer.lat + 0.01 }}&layer=mapnik&marker={{ yer.lat }},{{ yer.lon }}" allowfullscreen="" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Değerlendirme Sistemi -->
+        <div style="border-top: 2px solid rgba(220, 38, 38, 0.3); padding-top: 35px;">
+          <h4 style="color: white; font-weight: 700; font-size: 1.4rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;">⭐ Değerlendirmeler</h4>
+
+          <!-- Rating Formu -->
+          <div style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+            <label style="display: block; margin-bottom: 15px; color: white; font-weight: 700; font-size: 1.05rem;"><b>Bu mekanı değerlendir:</b></label>
+            <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+              <button class="star-btn" data-rating="1" style="background: none; border: none; font-size: 28px; cursor: pointer; transition: all 0.3s ease; transform: scale(1); opacity: 0.5;">⭐</button>
+              <button class="star-btn" data-rating="2" style="background: none; border: none; font-size: 28px; cursor: pointer; transition: all 0.3s ease; transform: scale(1); opacity: 0.5;">⭐⭐</button>
+              <button class="star-btn" data-rating="3" style="background: none; border: none; font-size: 28px; cursor: pointer; transition: all 0.3s ease; transform: scale(1); opacity: 0.5;">⭐⭐⭐</button>
+              <button class="star-btn" data-rating="4" style="background: none; border: none; font-size: 28px; cursor: pointer; transition: all 0.3s ease; transform: scale(1); opacity: 0.5;">⭐⭐⭐⭐</button>
+              <button class="star-btn" data-rating="5" style="background: none; border: none; font-size: 28px; cursor: pointer; transition: all 0.3s ease; transform: scale(1); opacity: 0.5;">⭐⭐⭐⭐⭐</button>
+            </div>
+            <input type="text" id="commentInput" class="form-control mb-3" placeholder="Yorum yazın (isteğe bağlı)..." style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 12px 15px; border-radius: 8px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+              <button id="submitComment" class="btn btn-sm" style="background: linear-gradient(135deg, #dc2626 0%, #9333ea 100%); color: white; padding: 10px 25px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">Gönder</button>
+              <span id="selectedRating" style="color: #fbbf24; font-weight: 700; font-size: 1.05rem;">Rating seçilmedi</span>
+            </div>
+          </div>
+
+          <!-- Yorumlar Listesi -->
+          <div id="commentsList" style="max-height: 500px; overflow-y: auto;"></div>
+        </div>
+
+        <!-- Butonlar -->
+        <div style="display: flex; gap: 15px; margin-top: 35px; flex-wrap: wrap;">
+          <a class="buton" href="/harita" style="background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%); color: white; padding: 14px 35px; border: none; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1.05rem; cursor: pointer; transition: all 0.3s ease; display: inline-block;">Haritada Gör</a>
+          <a class="buton" href="/" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; padding: 14px 35px; border: none; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1.05rem; cursor: pointer; transition: all 0.3s ease; display: inline-block;">← Geri Dön</a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      Ankara Tarihi Mekanlar Rehberi • Eğitim Projesi
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Dark Mode Toggle
+      const themeToggle = document.getElementById('themeToggle');
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️';
+      }
+      themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        themeToggle.textContent = isDark ? '☀️' : '🌙';
+      });
+
+      // Değerlendirme + Yorumlar (localStorage)
+      const yerId = {{ yer.id }};
+      let selectedRating = 0;
+      const starBtns = document.querySelectorAll('.star-btn');
+      const selectedRatingSpan = document.getElementById('selectedRating');
+      const commentInput = document.getElementById('commentInput');
+      const submitBtn = document.getElementById('submitComment');
+      const commentsList = document.getElementById('commentsList');
+
+      function loadComments() {
+        const comments = JSON.parse(localStorage.getItem(`comments_${yerId}`) || '[]');
+        commentsList.innerHTML = '';
+        if (comments.length === 0) {
+          commentsList.innerHTML = '<p style="color: rgba(255, 255, 255, 0.5); text-align: center; font-style: italic;">Henüz yorum yapılmamış.</p>';
+          return;
+        }
+        comments.forEach(c => {
+          const d = document.createElement('div');
+          d.style.cssText = 'background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%); padding: 18px; margin-bottom: 15px; border-radius: 10px; border-left: 4px solid #fbbf24; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);';
+          const dateStr = new Date(c.date).toLocaleDateString('tr-TR');
+          d.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><span style="color: #fbbf24; font-size: 1.2rem; font-weight: 700;">${'⭐'.repeat(c.rating)}</span><small style="color: rgba(255, 255, 255, 0.5); font-size: 0.9rem;">${dateStr}</small></div><p style="margin: 0; color: rgba(255, 255, 255, 0.85); line-height: 1.6; font-size: 1rem;">${c.text || '(Yalnızca rating)'}</p>`;
+          commentsList.appendChild(d);
+        });
+      }
+
+      starBtns.forEach(b => {
+        b.addEventListener('click', () => { 
+          selectedRating = parseInt(b.dataset.rating); 
+          selectedRatingSpan.textContent = `Rating: ${selectedRating}/5`;
+          selectedRatingSpan.style.color = '#fbbf24';
+          // Visual feedback for selected star
+          starBtns.forEach(btn => {
+            const btnRating = parseInt(btn.dataset.rating);
+            if (btnRating <= selectedRating) {
+              btn.style.opacity = '1';
+              btn.style.transform = 'scale(1.1)';
+            } else {
+              btn.style.opacity = '0.5';
+              btn.style.transform = 'scale(1)';
+            }
+          });
+        });
+        b.addEventListener('mouseenter', () => {
+          const hoverRating = parseInt(b.dataset.rating);
+          starBtns.forEach(btn => {
+            const btnRating = parseInt(btn.dataset.rating);
+            if (btnRating <= hoverRating) {
+              btn.style.opacity = '1';
+              btn.style.transform = 'scale(1.1)';
+            } else {
+              btn.style.opacity = '0.5';
+              btn.style.transform = 'scale(1)';
+            }
+          });
+        });
+        b.addEventListener('mouseleave', () => {
+          starBtns.forEach(btn => {
+            const btnRating = parseInt(btn.dataset.rating);
+            if (btnRating <= selectedRating) {
+              btn.style.opacity = '1';
+              btn.style.transform = 'scale(1.1)';
+            } else {
+              btn.style.opacity = '0.5';
+              btn.style.transform = 'scale(1)';
+            }
+          });
+        });
+      });
+
+      submitBtn.addEventListener('click', () => {
+        if (selectedRating === 0) { alert('Lütfen bir rating seçin'); return; }
+        const text = commentInput.value.trim();
+        const comments = JSON.parse(localStorage.getItem(`comments_${yerId}`) || '[]');
+        comments.push({ rating: selectedRating, text: text, date: new Date().toISOString() });
+        localStorage.setItem(`comments_${yerId}`, JSON.stringify(comments));
+        commentInput.value = ''; 
+        selectedRating = 0; 
+        selectedRatingSpan.textContent = 'Rating seçilmedi'; 
+        selectedRatingSpan.style.color = 'rgba(255, 255, 255, 0.6)';
+        starBtns.forEach(btn => {
+          btn.style.opacity = '0.5';
+          btn.style.transform = 'scale(1)';
+        });
+        loadComments();
+      });
+
+      loadComments();
+    </script>
+  </body>
+</html>

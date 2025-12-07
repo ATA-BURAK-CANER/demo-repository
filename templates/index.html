@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ankara Tarihi Mekanlar Rehberi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <header class="d-flex align-items-center">
+      <h1>Ankara Tarihi Mekanlar Rehberi</h1>
+      <nav style="display: flex; align-items: center; gap: 20px;">
+        <a href="/">Ana Sayfa</a>
+        <a href="/harita">Harita</a>
+        <button class="theme-toggle" id="themeToggle" title="Dark Mode">🌙</button>
+      </nav>
+    </header>
+
+    <main class="container mt-4">
+      <h2>Öne Çıkan Mekanlar</h2>
+
+      <!-- Arama Çubuğu -->
+      <div class="search-container mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Mekan adı, kategori veya şehire göre ara...">
+      </div>
+
+      <!-- Filtreleme -->
+      <div class="filter-section mb-4" style="border:1px solid var(--border-color,#ddd); padding:12px; border-radius:8px;">
+        <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+          <div>
+            <strong>Kategori:</strong>
+            <div id="kategoriFilters" style="display:inline-block; margin-left:8px;"></div>
+          </div>
+          <div>
+            <strong>Şehir:</strong>
+            <div id="sehirFilters" style="display:inline-block; margin-left:8px;"></div>
+          </div>
+          <div style="margin-left:auto;">
+            <button id="resetFilters" class="btn btn-sm btn-secondary">Filtreleri Sıfırla</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" id="mekanlarContainer"></div>
+    </main>
+
+    <footer>
+      Ankara Tarihi Mekanlar Rehberi • Eğitim Projesi
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Veriler (Flask tarafından sağlanır)
+      const yerler = {{ yerler | tojson }};
+
+      // Elemanlar
+      const searchInput = document.getElementById('searchInput');
+      const mekanlarContainer = document.getElementById('mekanlarContainer');
+      const kategoriFilters = document.getElementById('kategoriFilters');
+      const sehirFilters = document.getElementById('sehirFilters');
+      const resetFilters = document.getElementById('resetFilters');
+
+      // Dark mode
+      const themeToggle = document.getElementById('themeToggle');
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️';
+      }
+      themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        themeToggle.textContent = isDark ? '☀️' : '🌙';
+      });
+
+      // Render fonksiyonu
+      function renderYerler(list) {
+        mekanlarContainer.innerHTML = '';
+        if (!list || list.length === 0) {
+          mekanlarContainer.innerHTML = '<div class="col-12"><p style="text-align:center;color:var(--text-secondary);">Sonuç bulunamadı.</p></div>';
+          return;
+        }
+        list.forEach(yer => {
+          const thumb = (yer.images && yer.images.length) ? yer.images[0] : yer.resim;
+          const col = document.createElement('div');
+          col.className = 'col-md-6 col-lg-4';
+          col.innerHTML = `
+            <div class="mekan-karti">
+              <h3>${yer.isim}</h3>
+              <p>${yer.kisa}</p>
+              <small style="color:var(--text-secondary);">${yer.kategori} • ${yer.sehir}</small>
+              <img src="/static/${thumb}" alt="${yer.isim}" class="img-fluid place-image" loading="lazy" onerror="this.src='https://via.placeholder.com/400x200?text=Resim+Yok'">
+              <p style="margin-top:8px;"><a class="buton" href="/yer/${yer.id}">Detay</a> <a class="buton" href="/harita" style="background:#007bff; margin-left:8px;">Haritada Gör</a></p>
+            </div>
+          `;
+          mekanlarContainer.appendChild(col);
+        });
+      }
+
+      // Filtre UI oluşturma
+      const kategoriSet = [...new Set(yerler.map(y => y.kategori))];
+      const sehirSet = [...new Set(yerler.map(y => y.sehir))];
+      const selectedKategoriler = new Set();
+      const selectedSehirler = new Set();
+
+      function createCheckbox(container, value, onChange) {
+        const label = document.createElement('label');
+        label.style.marginRight = '10px';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = value;
+        cb.addEventListener('change', onChange);
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(' ' + value));
+        container.appendChild(label);
+      }
+
+      kategoriSet.forEach(k => createCheckbox(kategoriFilters, k, (e) => { if (e.target.checked) selectedKategoriler.add(k); else selectedKategoriler.delete(k); applyFilters(); }));
+      sehirSet.forEach(s => createCheckbox(sehirFilters, s, (e) => { if (e.target.checked) selectedSehirler.add(s); else selectedSehirler.delete(s); applyFilters(); }));
+
+      resetFilters.addEventListener('click', () => {
+        selectedKategoriler.clear(); selectedSehirler.clear(); searchInput.value = '';
+        document.querySelectorAll('#kategoriFilters input, #sehirFilters input').forEach(i => i.checked = false);
+        applyFilters();
+      });
+
+      // Filtre ve arama uygulama
+      function applyFilters() {
+        const q = searchInput.value.trim().toLowerCase();
+        let filtered = yerler.slice();
+        if (q) {
+          filtered = filtered.filter(y => y.isim.toLowerCase().includes(q) || y.kategori.toLowerCase().includes(q) || y.sehir.toLowerCase().includes(q) || y.kisa.toLowerCase().includes(q));
+        }
+        if (selectedKategoriler.size > 0) filtered = filtered.filter(y => selectedKategoriler.has(y.kategori));
+        if (selectedSehirler.size > 0) filtered = filtered.filter(y => selectedSehirler.has(y.sehir));
+        renderYerler(filtered);
+      }
+
+      searchInput.addEventListener('input', applyFilters);
+      // İlk render
+      renderYerler(yerler);
+    </script>
+  </body>
+</html>
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ankara Tarihi Mekanlar Rehberi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <header class="d-flex align-items-center">
+      <h1>Ankara Tarihi Mekanlar Rehberi</h1>
+      <nav style="display: flex; align-items: center; gap: 20px;">
+        <a href="/">Ana Sayfa</a>
+        <a href="/harita">Harita</a>
+        <button class="theme-toggle" id="themeToggle" title="Dark Mode">🌙</button>
+      </nav>
+    </header>
+
+    <main class="container mt-4">
+      <h2>Öne Çıkan Mekanlar</h2>
+
+      <!-- Arama Çubuğu -->
+      <div class="search-container mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Mekan adı, kategori veya şehire göre ara...">
+      </div>
+
+      <!-- Filtreleme -->
+      <div class="filter-section mb-4" style="border:1px solid var(--border-color,#ddd); padding:12px; border-radius:8px;">
+        <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+          <div>
+            <strong>Kategori:</strong>
+            <div id="kategoriFilters" style="display:inline-block; margin-left:8px;"></div>
+          </div>
+          <div>
+            <strong>Şehir:</strong>
+            <div id="sehirFilters" style="display:inline-block; margin-left:8px;"></div>
+          </div>
+          <div style="margin-left:auto;">
+            <button id="resetFilters" class="btn btn-sm btn-secondary">Filtreleri Sıfırla</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" id="mekanlarContainer"></div>
+    </main>
+
+    <footer>
+      Ankara Tarihi Mekanlar Rehberi • Eğitim Projesi
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Veriler (Flask tarafından sağlanır)
+      const yerler = {{ yerler | tojson }};
+
+      // Elemanlar
+      const searchInput = document.getElementById('searchInput');
+      const mekanlarContainer = document.getElementById('mekanlarContainer');
+      const kategoriFilters = document.getElementById('kategoriFilters');
+      const sehirFilters = document.getElementById('sehirFilters');
+      const resetFilters = document.getElementById('resetFilters');
+
+      // Dark mode
+      const themeToggle = document.getElementById('themeToggle');
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️';
+      }
+      themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        themeToggle.textContent = isDark ? '☀️' : '🌙';
+      });
+
+      // Render fonksiyonu
+      function renderYerler(list) {
+        mekanlarContainer.innerHTML = '';
+        if (!list || list.length === 0) {
+          mekanlarContainer.innerHTML = '<div class="col-12"><p style="text-align:center;color:var(--text-secondary);">Sonuç bulunamadı.</p></div>';
+          return;
+        }
+        list.forEach(yer => {
+          const thumb = (yer.images && yer.images.length) ? yer.images[0] : yer.resim;
+          const col = document.createElement('div');
+          col.className = 'col-md-6 col-lg-4';
+          col.innerHTML = `
+            <div class="mekan-karti">
+              <h3>${yer.isim}</h3>
+              <p>${yer.kisa}</p>
+              <small style="color:var(--text-secondary);">${yer.kategori} • ${yer.sehir}</small>
+              <img src="/static/${thumb}" alt="${yer.isim}" class="img-fluid place-image" loading="lazy" onerror="this.src='https://via.placeholder.com/400x200?text=Resim+Yok'">
+              <p style="margin-top:8px;"><a class="buton" href="/yer/${yer.id}">Detay</a> <a class="buton" href="/harita" style="background:#007bff; margin-left:8px;">Haritada Gör</a></p>
+            </div>
+          `;
+          mekanlarContainer.appendChild(col);
+        });
+      }
+
+      // Filtre UI oluşturma
+      const kategoriSet = [...new Set(yerler.map(y => y.kategori))];
+      const sehirSet = [...new Set(yerler.map(y => y.sehir))];
+      const selectedKategoriler = new Set();
+      const selectedSehirler = new Set();
+
+      function createCheckbox(container, value, onChange) {
+        const label = document.createElement('label');
+        label.style.marginRight = '10px';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = value;
+        cb.addEventListener('change', onChange);
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(' ' + value));
+        container.appendChild(label);
+      }
+
+      kategoriSet.forEach(k => createCheckbox(kategoriFilters, k, (e) => { if (e.target.checked) selectedKategoriler.add(k); else selectedKategoriler.delete(k); applyFilters(); }));
+      sehirSet.forEach(s => createCheckbox(sehirFilters, s, (e) => { if (e.target.checked) selectedSehirler.add(s); else selectedSehirler.delete(s); applyFilters(); }));
+
+      resetFilters.addEventListener('click', () => {
+        selectedKategoriler.clear(); selectedSehirler.clear(); searchInput.value = '';
+        document.querySelectorAll('#kategoriFilters input, #sehirFilters input').forEach(i => i.checked = false);
+        applyFilters();
+      });
+
+      // Filtre ve arama uygulama
+      function applyFilters() {
+        const q = searchInput.value.trim().toLowerCase();
+        let filtered = yerler.slice();
+        if (q) {
+          filtered = filtered.filter(y => y.isim.toLowerCase().includes(q) || y.kategori.toLowerCase().includes(q) || y.sehir.toLowerCase().includes(q) || y.kisa.toLowerCase().includes(q));
+        }
+        if (selectedKategoriler.size > 0) filtered = filtered.filter(y => selectedKategoriler.has(y.kategori));
+        if (selectedSehirler.size > 0) filtered = filtered.filter(y => selectedSehirler.has(y.sehir));
+        renderYerler(filtered);
+      }
+
+      searchInput.addEventListener('input', applyFilters);
+      // İlk render
+      renderYerler(yerler);
+    </script>
+  </body>
+</html>
+<!doctype html>
+<html lang="tr">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Ankara Tarihi Mekanlar Rehberi</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	</head>
+	<body>
+		<header class="d-flex align-items-center">
+			<h1>Ankara Tarihi Mekanlar Rehberi</h1>
+			<nav style="display: flex; align-items: center; gap: 20px;">
+				<a href="/">Ana Sayfa</a>
+				<a href="/harita">Harita</a>
+				<button class="theme-toggle" id="themeToggle" title="Dark Mode">🌙</button>
+			</nav>
+		</header>
+
+		<main class="container mt-4">
+			<h2>Öne Çıkan Mekanlar</h2>
+
+			<!-- Arama Çubuğu -->
+			<div class="search-container mb-3">
+				<input type="text" id="searchInput" class="form-control" placeholder="🔍 Mekan adı, kategori veya şehire göre ara...">
+			</div>
+
+			<!-- Filtreleme -->
+			<div class="filter-section mb-4" style="border:1px solid var(--border-color,#ddd); padding:12px; border-radius:8px;">
+				<div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+					<div>
+						<strong>Kategori:</strong>
+						<div id="kategoriFilters" style="display:inline-block; margin-left:8px;"></div>
+					</div>
+					<div>
+						<strong>Şehir:</strong>
+						<div id="sehirFilters" style="display:inline-block; margin-left:8px;"></div>
+					</div>
+					<div style="margin-left:auto;">
+						<button id="resetFilters" class="btn btn-sm btn-secondary">Filtreleri Sıfırla</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="row" id="mekanlarContainer"></div>
+		</main>
+
+		<footer>
+			Ankara Tarihi Mekanlar Rehberi • Eğitim Projesi
+		</footer>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			// Veriler (Flask tarafından sağlanır)
+			const yerler = {{ yerler | tojson }};
+
+			// Elemanlar
+			const searchInput = document.getElementById('searchInput');
+			const mekanlarContainer = document.getElementById('mekanlarContainer');
+			const kategoriFilters = document.getElementById('kategoriFilters');
+			const sehirFilters = document.getElementById('sehirFilters');
+			const resetFilters = document.getElementById('resetFilters');
+
+			// Dark mode
+			const themeToggle = document.getElementById('themeToggle');
+			if (localStorage.getItem('darkMode') === 'true') {
+				document.body.classList.add('dark-mode');
+				themeToggle.textContent = '☀️';
+			}
+			themeToggle.addEventListener('click', () => {
+				document.body.classList.toggle('dark-mode');
+				const isDark = document.body.classList.contains('dark-mode');
+				localStorage.setItem('darkMode', isDark);
+				themeToggle.textContent = isDark ? '☀️' : '🌙';
+			});
+
+			// Render fonksiyonu
+			function renderYerler(list) {
+				mekanlarContainer.innerHTML = '';
+				if (!list || list.length === 0) {
+					mekanlarContainer.innerHTML = '<div class="col-12"><p style="text-align:center;color:var(--text-secondary);">Sonuç bulunamadı.</p></div>';
+					return;
+				}
+				list.forEach(yer => {
+					const thumb = (yer.images && yer.images.length) ? yer.images[0] : yer.resim;
+					const col = document.createElement('div');
+					col.className = 'col-md-6 col-lg-4';
+					col.innerHTML = `
+						<div class="mekan-karti">
+							<h3>${yer.isim}</h3>
+							<p>${yer.kisa}</p>
+							<small style="color:var(--text-secondary);">${yer.kategori} • ${yer.sehir}</small>
+							<img src="/static/${thumb}" alt="${yer.isim}" class="img-fluid place-image" loading="lazy" onerror="this.src='https://via.placeholder.com/400x200?text=Resim+Yok'">
+							<p style="margin-top:8px;"><a class="buton" href="/yer/${yer.id}">Detay</a> <a class="buton" href="/harita" style="background:#007bff; margin-left:8px;">Haritada Gör</a></p>
+						</div>
+					`;
+					mekanlarContainer.appendChild(col);
+				});
+			}
+
+			// Filtre UI oluşturma
+			const kategoriSet = [...new Set(yerler.map(y => y.kategori))];
+			const sehirSet = [...new Set(yerler.map(y => y.sehir))];
+			const selectedKategoriler = new Set();
+			const selectedSehirler = new Set();
+
+			function createCheckbox(container, value, onChange) {
+				const label = document.createElement('label');
+				label.style.marginRight = '10px';
+				const cb = document.createElement('input');
+				cb.type = 'checkbox';
+				cb.value = value;
+				cb.addEventListener('change', onChange);
+				label.appendChild(cb);
+				label.appendChild(document.createTextNode(' ' + value));
+				container.appendChild(label);
+			}
+
+			kategoriSet.forEach(k => createCheckbox(kategoriFilters, k, (e) => { if (e.target.checked) selectedKategoriler.add(k); else selectedKategoriler.delete(k); applyFilters(); }));
+			sehirSet.forEach(s => createCheckbox(sehirFilters, s, (e) => { if (e.target.checked) selectedSehirler.add(s); else selectedSehirler.delete(s); applyFilters(); }));
+
+			resetFilters.addEventListener('click', () => {
+				selectedKategoriler.clear(); selectedSehirler.clear(); searchInput.value = '';
+				document.querySelectorAll('#kategoriFilters input, #sehirFilters input').forEach(i => i.checked = false);
+				applyFilters();
+			});
+
+			// Filtre ve arama uygulama
+			function applyFilters() {
+				const q = searchInput.value.trim().toLowerCase();
+				let filtered = yerler.slice();
+				if (q) {
+					filtered = filtered.filter(y => y.isim.toLowerCase().includes(q) || y.kategori.toLowerCase().includes(q) || y.sehir.toLowerCase().includes(q) || y.kisa.toLowerCase().includes(q));
+				}
+				if (selectedKategoriler.size > 0) filtered = filtered.filter(y => selectedKategoriler.has(y.kategori));
+				if (selectedSehirler.size > 0) filtered = filtered.filter(y => selectedSehirler.has(y.sehir));
+				renderYerler(filtered);
+			}
+
+			searchInput.addEventListener('input', applyFilters);
+			// İlk render
+			renderYerler(yerler);
+		</script>
+	</body>
+</html>
+

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="tr">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Harita - Ankara Tarihi Mekanlar</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+		<style>
+			html, body {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+			}
+			#map {
+				height: 100%;
+				width: 100%;
+			}
+			.leaflet-container {
+				height: 100%;
+			}
+			.map-nav {
+				position: absolute;
+				top: 10px;
+				left: 10px;
+				z-index: 1000;
+				background: white;
+				padding: 10px 15px;
+				border-radius: 5px;
+				box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+			}
+			.map-nav a {
+				color: #0f172a;
+				text-decoration: none;
+				font-weight: 500;
+				font-size: 14px;
+			}
+			.map-nav a:hover {
+				color: #dc2626;
+			}
+		</style>
+	</head>
+  <body>
+    <div id="map"></div>
+    <div class="map-nav">
+      <a href="/">← Ana Sayfa</a>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      const map = L.map('map').setView([39.9259, 32.8543], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      // URL'den mekan ID'sini al
+      const urlParams = new URLSearchParams(window.location.search);
+      const selectedPlaceId = urlParams.get('id');
+
+      fetch('/api/yerler')
+        .then(r => r.json())
+        .then(data => {
+          let selectedPlace = null;
+          data.forEach(y => {
+            const marker = L.marker([y.lat, y.lon]).addTo(map);
+            const popup = `<b>${y.isim}</b><br>${y.kisa}<br><a href='/yer/${y.id}'>Detay</a>`;
+            marker.bindPopup(popup);
+            
+            // Seçili mekanı bulup merkezle
+            if (selectedPlaceId && y.id == selectedPlaceId) {
+              selectedPlace = y;
+              marker.openPopup();
+            }
+          });
+          
+          // Eğer mekan seçildiyse haritayı o konuma merkezle
+          if (selectedPlace) {
+            map.setView([selectedPlace.lat, selectedPlace.lon], 15);
+          }
+        })
+        .catch(err => console.error(err));
+    </script>
+	</body>
+</html>
+
