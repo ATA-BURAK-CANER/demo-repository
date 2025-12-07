@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tarihi Mekanlar Rehberi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css">
+  </head>
+  <body>
+    <header class="d-flex align-items-center" style="background: linear-gradient(90deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 27, 75, 0.95) 50%, rgba(25, 35, 72, 0.95) 100%); padding: 20px 40px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); border-bottom: 2px solid rgba(220, 38, 38, 0.3); position: relative; overflow: hidden;">
+      <div style="position: absolute; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(220, 38, 38, 0.1) 0%, transparent 70%); top: -50px; left: -50px; animation: pulse 8s ease-in-out infinite;"></div>
+      <div style="position: absolute; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(30, 58, 138, 0.1) 0%, transparent 70%); bottom: -40px; right: 100px; animation: pulse 10s ease-in-out infinite 2s;"></div>
+      
+      <h1 style="color: white; font-size: 1.8rem; font-weight: 900; margin: 0; letter-spacing: 1px; position: relative; z-index: 2; background: linear-gradient(135deg, #fbbf24 0%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);">Tarihi Mekanlar Rehberi</h1>
+      
+      <nav style="display: flex; align-items: center; gap: 30px; margin-left: auto; position: relative; z-index: 2;">
+        <a href="./" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 1.05rem; font-weight: 600; transition: all 0.3s ease; padding: 8px 16px; border-radius: 8px; border: 2px solid transparent; letter-spacing: 0.5px;">Ana Sayfa</a>
+        <a id="haritaLink" href="#" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 1.05rem; font-weight: 600; transition: all 0.3s ease; padding: 8px 16px; border-radius: 8px; border: 2px solid transparent; letter-spacing: 0.5px;">Harita</a>
+        <a id="hakkimizdaLink" href="#" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 1.05rem; font-weight: 600; transition: all 0.3s ease; padding: 8px 16px; border-radius: 8px; border: 2px solid transparent; letter-spacing: 0.5px;">Hakkımızda</a>
+        <a id="ekipLink" href="#" style="color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 1.05rem; font-weight: 600; transition: all 0.3s ease; padding: 8px 16px; border-radius: 8px; border: 2px solid transparent; letter-spacing: 0.5px;">Geliştirici Ekibi</a>
+        <a id="adminLink" href="#" style="color: rgba(255, 193, 7, 0.7); text-decoration: none; font-size: 1.05rem; font-weight: 600; transition: all 0.3s ease; padding: 8px 16px; border-radius: 8px; border: 2px solid transparent; letter-spacing: 0.5px;">Yönetici Girişi</a>
+        <button class="theme-toggle" id="themeToggle" title="Dark Mode" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(147, 51, 234, 0.3)); border: 2px solid rgba(212, 175, 55, 0.4); color: #fbbf24; font-size: 1.3rem; padding: 8px 14px; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px;">🌙</button>
+      </nav>
+      
+      <style>
+        nav a:hover {
+          color: #fbbf24 !important;
+          border-color: rgba(251, 191, 36, 0.5) !important;
+          background: rgba(251, 191, 36, 0.1) !important;
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(251, 191, 36, 0.2);
+        }
+        
+        .theme-toggle:hover {
+          background: linear-gradient(135deg, rgba(220, 38, 38, 0.5), rgba(147, 51, 234, 0.5)) !important;
+          border-color: #fbbf24 !important;
+          box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+          transform: rotate(20deg) scale(1.1);
+        }
+      </style>
+    </header>
+
+    <!-- Body content identical to index_clean template; uses JS to fetch API -->
+    <main class="container-fluid" style="min-height: 100vh; padding: 0; margin: 0;">
+      <!-- Hoşgeldiniz Bölümü -->
+      <div id="welcomeSection" style="text-align: center; padding: 60px 20px 100px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 27, 75, 0.8) 50%, rgba(25, 35, 72, 0.8) 100%);">
+        <div style="position: relative; z-index: 2; max-width: 900px; width: 100%; margin: 0 auto;">
+          <div style="animation: fadeInDown 1s ease-out;">
+            <h1 style="font-size: 4.2rem; margin-bottom: 25px; color: white; font-weight: 900; line-height: 1.1; text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3); letter-spacing: -1px;">
+              Türkiye'nin Tarihi<br>
+              <span style="background: linear-gradient(135deg, #dc2626 0%, #9333ea 50%, #1e3a8a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: gradientShift 5s ease infinite; background-size: 200% 200%;">Mekanlarını Keşfedin</span>
+            </h1>
+          </div>
+          <div style="animation: fadeInUp 1s ease-out 0.3s both;">
+            <p style="font-size: 1.45rem; color: rgba(255, 255, 255, 0.85); margin-bottom: 70px; line-height: 1.8; font-weight: 400; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);">
+              Binlerce yıllık tarihe tanıklık eden, kültürel mirasımızın izlerini taşıyan 
+              <strong style="color: #fbbf24; font-weight: 700;">77 eşsiz mekanı</strong> keşfetmek için hazır mısınız?
+            </p>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 60px; margin-bottom: 80px; flex-wrap: wrap; animation: fadeInUp 1s ease-out 0.6s both;">
+            <div style="text-align: center; padding: 25px 35px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 25px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s ease;">
+              <div style="font-size: 3.5rem; font-weight: 900; background: linear-gradient(135deg, #dc2626, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">77</div>
+              <div style="color: rgba(255, 255, 255, 0.7); font-size: 1rem; font-weight: 600; letter-spacing: 0.5px;">Tarihi Mekan</div>
+            </div>
+            <div style="text-align: center; padding: 25px 35px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 25px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s ease;">
+              <div style="font-size: 3.5rem; font-weight: 900; background: linear-gradient(135deg, #1e3a8a, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">15+</div>
+              <div style="color: rgba(255, 255, 255, 0.7); font-size: 1rem; font-weight: 600; letter-spacing: 0.5px;">Şehir</div>
+            </div>
+            <div style="text-align: center; padding: 25px 35px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); border-radius: 25px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s ease;">
+              <div style="font-size: 3.5rem; font-weight: 900; background: linear-gradient(135deg, #d4af37, #eab308); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">10+</div>
+              <div style="color: rgba(255, 255, 255, 0.7); font-size: 1rem; font-weight: 600; letter-spacing: 0.5px;">Kategori</div>
+            </div>
+          </div>
+          <div style="animation: fadeInUp 1s ease-out 0.9s both; margin-bottom: 100px;">
+            <button id="startExploring" class="btn" style="background: linear-gradient(135deg, #dc2626 0%, #9333ea 50%, #1e3a8a 100%); background-size: 200% 200%; color: white; padding: 22px 65px; font-size: 1.5rem; font-weight: 700; border: none; border-radius: 60px; cursor: pointer; box-shadow: 0 20px 50px rgba(220, 38, 38, 0.4); transition: all 0.4s ease; position: relative; overflow: hidden; animation: gradientShift 3s ease infinite; letter-spacing: 0.5px;">
+              <span style="position: relative; z-index: 1; display: flex; align-items: center; gap: 12px;">
+                Keşfetmeye Başla
+                <span style="font-size: 1.8rem; animation: bounce 2s ease infinite;">✈️</span>
+              </span>
+            </button>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; animation: fadeInUp 1s ease-out 1.2s both;">
+            <div style="padding: 30px; border-radius: 25px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2); transition: all 0.4s ease; border: 1px solid rgba(255, 255, 255, 0.15); position: relative;">
+              <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 80px; height: 80px; background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(147, 51, 234, 0.3)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🗺️</div>
+              <div style="margin-top: 50px;">
+                <h3 style="font-size: 1.3rem; margin-bottom: 12px; color: white; font-weight: 700;">İnteraktif Harita</h3>
+                <p style="font-size: 1rem; color: rgba(255, 255, 255, 0.6); margin: 0; line-height: 1.6;">Mekanları harita üzerinde keşfedin ve detaylı bilgi alın</p>
+              </div>
+            </div>
+            <div style="padding: 30px; border-radius: 25px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2); transition: all 0.4s ease; border: 1px solid rgba(255, 255, 255, 0.15); position: relative;">
+              <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 80px; height: 80px; background: linear-gradient(135deg, rgba(30, 58, 138, 0.3), rgba(212, 175, 55, 0.3)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">📸</div>
+              <div style="margin-top: 50px;">
+                <h3 style="font-size: 1.3rem; margin-bottom: 12px; color: white; font-weight: 700;">Zengin Görseller</h3>
+                <p style="font-size: 1rem; color: rgba(255, 255, 255, 0.6); margin: 0; line-height: 1.6;">Her mekan için detaylı ve yüksek kaliteli fotoğraflar</p>
+              </div>
+            </div>
+            <div style="padding: 30px; border-radius: 25px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2); transition: all 0.4s ease; border: 1px solid rgba(255, 255, 255, 0.15); position: relative;">
+              <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 80px; height: 80px; background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(220, 38, 38, 0.3)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;">🔍</div>
+              <div style="margin-top: 50px;">
+                <h3 style="font-size: 1.3rem; margin-bottom: 12px; color: white; font-weight: 700;">Gelişmiş Arama</h3>
+                <p style="font-size: 1rem; color: rgba(255, 255, 255, 0.6); margin: 0; line-height: 1.6;">Filtreleme ve arama özellikleriyle mekanları bulun</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ana İçerik -->
+      <div id="mainContent" style="display: none; padding: 60px 20px 80px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 27, 75, 0.9) 50%, rgba(25, 35, 72, 0.9) 100%); min-height: 100vh; position: relative; overflow: hidden;">
+        <div style="max-width: 1400px; margin: 0 auto; position: relative; z-index: 2;">
+          <div style="margin-bottom: 60px;">
+            <h2 style="color: white; font-size: 2.8rem; margin-bottom: 15px; font-weight: 900; position: relative; display: inline-block;">
+              Öne Çıkan Mekanlar
+              <span style="position: absolute; bottom: -15px; left: 0; width: 120px; height: 4px; background: linear-gradient(90deg, #dc2626, #9333ea); border-radius: 2px;"></span>
+            </h2>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; margin-top: 30px; max-width: 600px; line-height: 1.7;">Türkiye'nin en önemli tarihi mekanlarını keşfedin. Her biri benzersiz bir hikaye taşıyor.</p>
+          </div>
+
+          <div class="search-container mb-4" style="margin-bottom: 30px;">
+            <input type="text" id="searchInput" class="form-control" placeholder="🔍 Mekan adı, kategori veya şehire göre ara..." style="background: rgba(255, 255, 255, 0.08); border: 2px solid rgba(251, 191, 36, 0.3); color: white; padding: 16px 20px; border-radius: 12px; font-size: 1.05rem; transition: all 0.3s ease;">
+          </div>
+
+          <div class="filter-section mb-4" style="border: 2px solid rgba(251, 191, 36, 0.2); padding: 25px; border-radius: 15px; background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(10px); margin-bottom: 40px;">
+            <div style="display: flex; gap: 25px; align-items: center; flex-wrap: wrap;">
+              <div>
+                <strong style="color: #fbbf24; font-size: 1.1rem; display: block; margin-bottom: 12px;">🏛️ Kategori:</strong>
+                <div id="kategoriFilters" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+              </div>
+              <div>
+                <strong style="color: #fbbf24; font-size: 1.1rem; display: block; margin-bottom: 12px;">📍 Şehir:</strong>
+                <div id="sehirFilters" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+              </div>
+              <div style="margin-left: auto;">
+                <button id="resetFilters" class="btn btn-sm" style="background: linear-gradient(135deg, #dc2626, #9333ea); color: white; border: none; padding: 12px 30px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 0.95rem;">🔄 Filtreleri Sıfırla</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="yerler-grid" id="mekanlarContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;"></div>
+        </div>
+      </div>
+    </main>
+
+    <style>
+      /* Animations used by template; kept for consistency */
+      @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px);} to { opacity: 1; transform: translateY(0);} }
+      @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px);} to { opacity: 1; transform: translateY(0);} }
+      @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg);} 50% { transform: translateY(-20px) rotate(5deg);} }
+      @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.6;} 50% { transform: scale(1.1); opacity: 0.8;} }
+      @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+      @keyframes bounce { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-5px);} }
+      @keyframes rotate { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+      @keyframes flyAway { 0% { transform: scale(1) translateX(0) translateY(0); opacity: 1;} 50% { transform: scale(0.8) translateX(100px) translateY(-50px); opacity: 0.5;} 100% { transform: scale(0.3) translateX(1500px) translateY(-500px) rotate(360deg); opacity: 0;} }
+      @keyframes fadeOutUp { from { opacity: 1; transform: translateY(0);} to { opacity: 0; transform: translateY(-50px);} }
+      #startExploring:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(220, 38, 38, 0.4); }
+      #startExploring:active { transform: translateY(-1px); }
+    </style>
+
+    <footer>
+      Tarihi Mekanlar Rehberi • Eğitim Projesi
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="static/api-config.js"></script>
+    <script>
+      const API_BASE = (window.API_BASE || '').replace(/\/$/, '');
+      const welcomeSection = document.getElementById('welcomeSection');
+      const mainContent = document.getElementById('mainContent');
+      const startExploring = document.getElementById('startExploring');
+      const searchInput = document.getElementById('searchInput');
+      const mekanlarContainer = document.getElementById('mekanlarContainer');
+      const kategoriFilters = document.getElementById('kategoriFilters');
+      const sehirFilters = document.getElementById('sehirFilters');
+      const resetFilters = document.getElementById('resetFilters');
+      const adminLink = document.getElementById('adminLink');
+      const haritaLink = document.getElementById('haritaLink');
+      const hakkimizdaLink = document.getElementById('hakkimizdaLink');
+      const ekipLink = document.getElementById('ekipLink');
+
+      let yerler = [];
+      const selectedKategoriler = new Set();
+      const selectedSehirler = new Set();
+
+      const resolveUrl = (path) => {
+        if (!path) return '';
+        if (/^https?:\/\//i.test(path)) return path;
+        if (!API_BASE) return path.startsWith('/') ? path : `/${path}`;
+        return `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+      };
+
+      // external links for static hosting
+      adminLink.href = resolveUrl('/admin');
+      haritaLink.href = resolveUrl('/harita');
+      hakkimizdaLink.href = resolveUrl('/hakkimizda');
+      ekipLink.href = resolveUrl('/ekip');
+
+      async function loadYerler() {
+        mekanlarContainer.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color: var(--text-secondary);">Yükleniyor...</div>';
+        try {
+          const resp = await fetch(resolveUrl('/api/yerler'));
+          if (!resp.ok) throw new Error('API yanıtı başarısız');
+          const data = await resp.json();
+          yerler = Array.isArray(data) ? data : [];
+          buildFilters();
+          applyFilters();
+        } catch (err) {
+          console.error(err);
+          mekanlarContainer.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color: var(--text-secondary);">Veri alınamadı. API_BASE ayarını kontrol edin.</div>';
+        }
+      }
+
+      startExploring.addEventListener('click', () => {
+        const plane = document.createElement('div');
+        plane.textContent = '✈️';
+        plane.style.cssText = `position: fixed; font-size: 4rem; z-index: 9999; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: flyAway 1.5s ease-in-out forwards;`;
+        document.body.appendChild(plane);
+        welcomeSection.style.animation = 'fadeOutUp 0.8s ease-out forwards';
+        setTimeout(() => {
+          welcomeSection.style.display = 'none';
+          mainContent.style.display = 'block';
+          mainContent.style.animation = 'fadeInUp 0.8s ease-out';
+          plane.remove();
+        }, 1000);
+      });
+
+      const themeToggle = document.getElementById('themeToggle');
+      const darkModePreference = localStorage.getItem('darkMode') !== 'false';
+      if (darkModePreference) {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️';
+      }
+      themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        themeToggle.textContent = isDark ? '☀️' : '🌙';
+      });
+
+      function renderYerler(list) {
+        mekanlarContainer.innerHTML = '';
+        if (!list || list.length === 0) {
+          mekanlarContainer.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color: var(--text-secondary);">Sonuç bulunamadı.</div>';
+          return;
+        }
+        list.forEach(yer => {
+          const thumbPath = yer.thumb_url || (yer.thumb ? resolveUrl(`/static/${yer.thumb}`) : '');
+          const detailHref = resolveUrl(`/yer/${yer.id}`);
+          const mapHref = resolveUrl(`/harita?id=${yer.id}`);
+          const imgSrc = thumbPath || 'https://via.placeholder.com/400x200?text=Resim+Yok';
+          const card = document.createElement('div');
+          card.className = 'mekan-card';
+          card.innerHTML = `
+            <h3>${yer.isim}</h3>
+            <p>${yer.kisa}</p>
+            <div class="mekan-card-meta">
+              <span class="mekan-card-kategori">${yer.kategori}</span>
+              <span class="mekan-card-sehir">${yer.sehir}</span>
+            </div>
+            <img src="${imgSrc}" alt="${yer.isim}" class="place-image" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; object-fit: cover;" loading="lazy" onerror="this.src='https://via.placeholder.com/400x200?text=Resim+Yok'">
+            <div class="mekan-card-buttons">
+              <a class="btn-detay" href="${detailHref}" style="text-decoration: none; text-align: center; padding: 10px 15px; border-radius: 8px; color: white; font-weight: 600; display: block;">DETAY</a>
+              <a class="btn-harita" href="${mapHref}" style="text-decoration: none; text-align: center; padding: 10px 15px; border-radius: 8px; color: white; font-weight: 600; display: block;">HARITADA GÖR</a>
+            </div>
+          `;
+          mekanlarContainer.appendChild(card);
+        });
+      }
+
+      function buildFilters() {
+        kategoriFilters.innerHTML = '';
+        sehirFilters.innerHTML = '';
+        selectedKategoriler.clear();
+        selectedSehirler.clear();
+        const kategoriSet = [...new Set(yerler.map(y => y.kategori))];
+        const sehirSet = [...new Set(yerler.map(y => y.sehir))];
+
+        const createCheckbox = (container, value, set) => {
+          const label = document.createElement('label');
+          label.style.cssText = 'margin: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 6px; color: rgba(255, 255, 255, 0.8); font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease;';
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.value = value;
+          cb.style.cssText = 'cursor: pointer; accent-color: #fbbf24;';
+          cb.addEventListener('change', (e) => {
+            if (e.target.checked) set.add(value); else set.delete(value);
+            if (e.target.checked) {
+              label.style.background = 'rgba(251, 191, 36, 0.2)';
+              label.style.borderColor = '#fbbf24';
+              label.style.color = '#fbbf24';
+            } else {
+              label.style.background = 'rgba(251, 191, 36, 0.08)';
+              label.style.borderColor = 'rgba(251, 191, 36, 0.2)';
+              label.style.color = 'rgba(255, 255, 255, 0.8)';
+            }
+            applyFilters();
+          });
+          label.appendChild(cb);
+          label.appendChild(document.createTextNode(value));
+          container.appendChild(label);
+        };
+
+        kategoriSet.forEach(k => createCheckbox(kategoriFilters, k, selectedKategoriler));
+        sehirSet.forEach(s => createCheckbox(sehirFilters, s, selectedSehirler));
+      }
+
+      resetFilters.addEventListener('click', () => {
+        selectedKategoriler.clear(); selectedSehirler.clear(); searchInput.value = '';
+        document.querySelectorAll('#kategoriFilters input, #sehirFilters input').forEach(i => i.checked = false);
+        applyFilters();
+      });
+
+      function applyFilters() {
+        const q = searchInput.value.trim().toLowerCase();
+        let filtered = yerler.slice();
+        if (q) {
+          filtered = filtered.filter(y => (y.isim || '').toLowerCase().includes(q) || (y.kategori || '').toLowerCase().includes(q) || (y.sehir || '').toLowerCase().includes(q) || (y.kisa || '').toLowerCase().includes(q));
+        }
+        if (selectedKategoriler.size > 0) filtered = filtered.filter(y => selectedKategoriler.has(y.kategori));
+        if (selectedSehirler.size > 0) filtered = filtered.filter(y => selectedSehirler.has(y.sehir));
+        renderYerler(filtered);
+      }
+
+      searchInput.addEventListener('input', applyFilters);
+      loadYerler();
+    </script>
+  </body>
+</html>
