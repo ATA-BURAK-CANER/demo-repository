@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <div class="container-xl section-gap">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title mb-0">Admin - Bilet Talepleri</h2>
+      <div class="d-flex gap-2">
+        <a class="btn pill-btn ghost" href="{{ url_for('admin.events') }}">Etkinlikler</a>
+        <a class="btn pill-btn ghost" href="{{ url_for('admin.logout') }}">Çıkış</a>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      {% for t in tickets %}
+        <div class="col-12">
+          <div class="panel event-admin-card">
+            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+              <div class="flex-grow-1">
+                <h5 class="mb-1">{{ t.first_name }} {{ t.last_name }}</h5>
+                <p class="text-muted small mb-2">
+                  <strong>Etkinlik:</strong> {{ t.event.title }}<br>
+                  <strong>E-posta:</strong> {{ t.email }}<br>
+                  {% if t.phone %}<strong>Telefon:</strong> {{ t.phone }}<br>{% endif %}
+                  <strong>Bilet Adedi:</strong> {{ t.ticket_count }}<br>
+                  <strong>Tarih:</strong> {{ t.created_at.strftime('%d.%m.%Y %H:%M') }}
+                </p>
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                  <span class="chip tiny {% if t.status == 'pending' %}light{% elif t.status == 'approved' %}{% else %}ghost{% endif %}">
+                    {% if t.status == 'pending' %}Beklemede
+                    {% elif t.status == 'approved' %}Onaylandı
+                    {% elif t.status == 'rejected' %}Reddedildi
+                    {% else %}{{ t.status }}
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <form method="post" action="{{ url_for('admin.update_ticket_status', ticket_id=t.id) }}" class="d-inline">
+                  <input type="hidden" name="status" value="approved">
+                  <button type="submit" class="btn pill-btn tiny">Onayla</button>
+                </form>
+                <form method="post" action="{{ url_for('admin.update_ticket_status', ticket_id=t.id) }}" class="d-inline">
+                  <input type="hidden" name="status" value="rejected">
+                  <button type="submit" class="btn pill-btn ghost tiny">Reddet</button>
+                </form>
+                <form method="post" action="{{ url_for('admin.delete_ticket', ticket_id=t.id) }}" onsubmit="return confirm('Bu talebi silmek istiyor musunuz?')" class="d-inline">
+                  <button type="submit" class="btn pill-btn ghost tiny">Sil</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="col-12">
+          <div class="panel text-center">Henüz bilet talebi bulunmuyor.</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
