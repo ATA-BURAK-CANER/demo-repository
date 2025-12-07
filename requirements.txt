@@ -1,0 +1,8 @@
+Flask
+
+# Not: Harita için Leaflet client-side CDN kullanılıyor, sunucu tarafında ekstra paket gerekmez.
+
+requests
+Flask-SQLAlchemy
+flask-cors
+gunicorn
